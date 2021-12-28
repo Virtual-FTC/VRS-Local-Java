@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Virtual Robot Simulator Platform</title>
+    <style>
+        body {
+            background-color: #242424;
+            margin-bottom: 10px;
+			overflow-x: hidden;
+        }
+
+        h1 {
+            margin-top: 0%;
+            padding-left: 20px;
+            font-weight: normal;
+            font-size: 50px;
+            font-family: Jura;
+            color: white;
+        }
+
+        h2 {
+            margin-top: 0%;
+            margin-bottom: 1%;
+            font-weight: normal;
+            font-size: 25px;
+            font-family: Jura;
+            color: white;
+        }
+
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        .center-horizontal {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .center-horizontal a button {
+            overflow: hidden;
+        }
+
+        @media screen and (max-width: 1175px) {
+            .center-horizontal .desc {
+                font-size: 30px;
+            }
+        }
+
+        @media screen and (max-width: 750px) {
+            .center-horizontal .desc {
+                font-size: 25px;
+            }
+        }
+
+        @font-face {
+            font-family: 'Jura';
+            src: url('./blocks/fonts/Jura-Light.ttf');
+        }
+
+        input:focus,
+        textarea:focus,
+        div:focus,
+        select:focus {
+            outline: none;
+        }
+
+
+        .button1 {
+            border-radius: 12px;
+            color: #242424;
+            padding: 16px 32px;
+            text-align: center;
+            font-family: Jura;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 40px;
+            margin: 10px 10px;
+            transition-duration: 0.4s;
+            cursor: pointer;
+            padding: 10px;
+            color: rgb(255, 255, 255);
+            background-color: transparent;
+            text-shadow: 2px 2px 10px #000000;
+            border: 2px solid rgb(255, 255, 255);
+        }
+
+        .button1:hover {
+            color: #00fd72;
+        }
+
+        .button1:focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+        .button2 {
+            border-radius: 12px;
+            color: #242424;
+            text-align: center;
+            font-family: Jura;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 30px;
+            margin: 10px 10px;
+            margin-bottom: 0px;
+            transition-duration: 0.4s;
+            cursor: pointer;
+            padding: 7.5px 10px;
+            color: rgb(255, 255, 255);
+            background-color: transparent;
+            text-shadow: 2px 2px 10px #000000;
+            border: 2px solid rgb(255, 255, 255);
+        }
+
+        .button2:hover {
+            color: #00fd72;
+        }
+
+        .button2:focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+        .xButton {
+            height: 15px;
+            width: 15px;
+            position: absolute;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .xButton:after {
+            position: absolute;
+            content: "\2A2F";
+            color: #FF0000;
+            font-size: 50px;
+            line-height: 35px;
+        }
+
+
+        .title {
+            height: 10%;
+        }
+
+        @keyframes titleReveal {
+            from {
+                height: 10%;
+            }
+
+            to {
+                height: 15%;
+            }
+        }
+
+        @keyframes titleHide {
+            from {
+                height: 15%;
+            }
+
+            to {
+                height: 10%;
+            }
+        }
+
+        .desc {
+            opacity: 0;
+            height: 0%;
+        }
+
+        @keyframes descReveal {
+            from {
+                opacity: 0;
+                height: 0%;
+            }
+
+            to {
+                opacity: 1;
+                height: 35%;
+            }
+        }
+
+        @keyframes descHide {
+            from {
+                opacity: 1;
+                height: 35%;
+            }
+
+            to {
+                opacity: 0;
+                height: 0%;
+            }
+        }
+
+        #overlay {
+            visibility: hidden;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            padding: 8px;
+            padding-bottom: 16px;
+            width: 98.9%;
+            background-color: #242424;
+        }
+
+        .chevron::before {
+            border-style: solid;
+            border-width: 0.25em 0.25em 0 0;
+            content: '';
+            display: inline-block;
+            height: 0.45em;
+            left: 0.15em;
+            position: relative;
+            top: 0.15em;
+            transform: rotate(-45deg);
+            vertical-align: top;
+            width: 0.45em;
+            color: white;
+            cursor: pointer;
+        }
+
+        .chevron.left:before {
+            left: 0.25em;
+            transform: rotate(-135deg);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="center-horizontal">
+        <h1 style="margin-bottom: 7.5px; text-align: center;">Welcome to the Virtual Robot Simulator Platform</h1>
+    </div>
+
+    <div class="center-horizontal" style=" padding-bottom: 2.5px">
+        <div class="center-horizontal" style="width:350px;"><img src="./firstIllinoisLogo.png" height="100"></div>
+        <div class="center-horizontal" style="width:350px;"><img src="./vrsLogo.png" height="175"></div>
+        <div class="center-horizontal" style="width:350px;"><img src="./FTCLogo.png" height="100"></div>
+    </div>
+
+    <div style="width: 100%;">
+        <div style="width: 50%; float: left;">
+            <div class="center-horizontal">
+                <a href="local.html"><button id="localButton" class="button1" onmouseover="buttonHover(this, true)"
+                        onmouseout="buttonHover(this, false)">
+                        <div class="title">Autonomous</div>
+                        <div class="desc">Program your very own FTC robot using the popular and easy to use "Blockly"
+                            programming language.</div>
+                    </button>
+                </a>
+            </div>
+        </div>
+        <div style="margin-left: 50%;">
+            <div class="center-horizontal">
+                <a href="multiplayer.html"><button id="multiplayerButton" class="button1"
+                        onmouseover="buttonHover(this, true)" onmouseout="buttonHover(this, false)">
+                        <div class="title">TeleOp</div>
+                        <div class="desc">Test your driving skills solo or with friends using the 2020-2021 FTC Ultimate
+                            Goal Field.</div>
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="center-horizontal">
+        <a href="robotConfig.html"><button class="button1">Robot Configuration</button></a>
+    </div>
+
+    <div class="center-horizontal">
+        <h2>Version 0.7 | 8/24/2021</h2>
+    </div>
+
+    <div class="center-horizontal">
+        <button class="button2" onClick="overlay('https://www.youtube.com/embed/bKFBm2jqFpI', true)">How To Use</button>
+        <button class="button2" onClick="overlay('http://vrobotsim.org/about-us/', true)">Meet the Team</button>
+        <button class="button2" onClick="overlay('http://vrobotsim.org/contact-us/', true)">Contact Us</button>
+        <button class="button2"
+            onClick="overlay('https://virtualftc.jasonbennett.work/courses/basic-movement-with-blocks/', true)">Lessons</button>
+    </div>
+
+    <div id="overlay">
+
+        <div style="display: flex;">
+            <a onClick="overlay('', false)" id="backButton"><span class="chevron left"></span></a>
+        </div>
+
+        <div class="container" style="display: flex; padding-top: 5px;">
+            <div style="width: 100%; background-color: #242424;">
+                <div id="fieldView" style="background-color: #000000;">
+                    <iframe src="" width="100%" height="100%" frameBorder="0"></iframe>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+		document.getElementById('fieldView').style.height = window.innerHeight - 42 + "px";
+
+		window.addEventListener('resize', function () {
+			document.getElementById('fieldView').style.height = window.innerHeight - 42 + "px";
+		});
+        function overlay(link, open) {
+            document.getElementById('overlay').lastElementChild.firstElementChild.firstElementChild.firstElementChild.src = link;
+            if (open) {
+                document.getElementById('overlay').style.visibility = "visible";
+				document.body.style.overflowY = "hidden";
+				window.scrollTo(0, 0);
+			}
+            else {
+				document.getElementById('overlay').style.visibility = "hidden";
+				document.body.style.overflowY = "inherit";
+			}
+        }
+    </script>
+
+    <script>
+        document.getElementById('localButton').style.backgroundImage = "url('./local.png')";
+        document.getElementById('localButton').style.backgroundRepeat = "no-repeat";
+
+        document.getElementById('multiplayerButton').style.backgroundImage = "url('./multiplayer.png')";
+        document.getElementById('multiplayerButton').style.backgroundRepeat = "no-repeat";
+
+        document.getElementById('localButton').style.height = 1.65 * (screen.height / 3 - 44) + "px";
+        document.getElementById('multiplayerButton').style.height = 1.65 * (screen.height / 3 - 44) + "px";
+
+        function quitApp() {
+            window.close();
+        }
+
+        function buttonHover(x, hovered) {
+            if (hovered) {
+                x.firstElementChild.style.animation = "titleReveal .5s ease 1 normal forwards";
+                x.lastElementChild.style.animation = "descReveal .5s ease 1 normal forwards";
+            }
+            else {
+                x.firstElementChild.style.animation = "titleHide .5s ease 1 normal forwards";
+                x.lastElementChild.style.animation = "descHide .5s ease 1 normal forwards";
+            }
+
+        }
+
+    </script>
+</body>
+
+</html>
