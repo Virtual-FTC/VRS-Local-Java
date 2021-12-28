@@ -17,7 +17,8 @@ import java.util.StringTokenizer;
 
 public class WebServer implements Runnable {
 
-	static final File ROOT = new File(new File("src/assets/").getAbsolutePath());
+	static final File ROOT = new File(new File("src/").getAbsolutePath());
+	static final File WEB_ROOT = new File(new File("src/assets/").getAbsolutePath());
 	static final String DEFAULT_FILE = "homepage.html";
 	static final int PORT = 80;
 	static boolean canRunThread = true;
@@ -31,7 +32,6 @@ public class WebServer implements Runnable {
 
 	public static void main(String[] args) {
 //		compileProgram();
-		System.out.println("ROOT: " + ROOT.getPath());
 		canRunThread = true;
 		startServerThread();
 	}
@@ -70,37 +70,35 @@ public class WebServer implements Runnable {
 	}
 
 	@Override
-	public void run() {
-		// we manage our particular client connection
+	public void run() { // manage client connection
 		BufferedReader in = null;
 		PrintWriter out = null;
 		BufferedOutputStream dataOut = null;
 		String fileRequested = null;
 
 		try {
-			// we read characters from the client via input stream on the socket
+			// read characters from client from the socket
 			in = new BufferedReader(new InputStreamReader(connect.getInputStream()));
-			// we get character output stream to client (for headers)
+			// get character output stream to client (for headers)
 			out = new PrintWriter(connect.getOutputStream());
 			// get binary output stream to client (for requested data)
 			dataOut = new BufferedOutputStream(connect.getOutputStream());
 
 			// get first line of the request from the client
 			String input = in.readLine();
-			// we parse the request with a string tokenizer
+			// parse the request with a string tokenizer
 			StringTokenizer parse = new StringTokenizer(input);
-			String method = parse.nextToken().toUpperCase(); // we get the HTTP method of the client
-			// we get file requested
+			System.out.println("Input: " + input);
+			String method = parse.nextToken().toUpperCase(); // get the HTTP method of client
+
 			fileRequested = parse.nextToken().toLowerCase();
 
-			// we support only GET and HEAD methods, we check
 			if (method.equals("GET") || method.equals("HEAD")) {
-				// GET or HEAD method
 				if (fileRequested.endsWith("/")) {
 					fileRequested += DEFAULT_FILE;
 				}
 
-				File file = new File(ROOT, fileRequested);
+				File file = new File(WEB_ROOT, fileRequested);
 				int fileLength = (int) file.length();
 				String content = getContentType(fileRequested);
 
@@ -109,19 +107,16 @@ public class WebServer implements Runnable {
 
 					// send HTTP Headers
 					out.println("HTTP/1.1 200 OK");
-					out.println("Server: Java HTTP Server from SSaurel : 1.0");
+					out.println("Server: VRS Java Server");
 					out.println("Date: " + new Date());
 					out.println("Content-type: " + content);
 					out.println("Content-length: " + fileLength);
-					out.println(); // blank line between headers and content, very important !
-					out.flush(); // flush character output stream buffer
+					out.println(); // blank line between headers and content **Very Important**
+					out.flush(); // flush output stream buffer
 
 					dataOut.write(fileData, 0, fileLength);
 					dataOut.flush();
 				}
-
-				System.out.println("File " + fileRequested + " of type " + content + " returned");
-
 			}
 
 		} catch (FileNotFoundException fnfe) {
@@ -138,7 +133,7 @@ public class WebServer implements Runnable {
 				in.close();
 				out.close();
 				dataOut.close();
-				connect.close(); // we close socket connection
+				connect.close(); // close socket connection
 			} catch (Exception e) {
 				System.err.println("Error closing stream : " + e.getMessage());
 			}
@@ -172,24 +167,20 @@ public class WebServer implements Runnable {
 	}
 
 	private void fileNotFound(PrintWriter out, OutputStream dataOut, String fileRequested) throws IOException {
-//		File file = new File(WEB_ROOT, FILE_NOT_FOUND);
-//		int fileLength = (int) file.length();
-//		String content = "text/html";
-//		byte[] fileData = readFileData(file, fileLength);
-//
-//		out.println("HTTP/1.1 404 File Not Found");
-//		out.println("Server: Java HTTP Server from SSaurel : 1.0");
-//		out.println("Date: " + new Date());
-//		out.println("Content-type: " + content);
-//		out.println("Content-length: " + fileLength);
-//		out.println(); // blank line between headers and content, very important !
-//		out.flush(); // flush character output stream buffer
-//
-//		dataOut.write(fileData, 0, fileLength);
-//		dataOut.flush();
-//
-//		if (verbose) {
-//			System.out.println("File " + fileRequested + " not found");
-//		}
+		File file = new File(ROOT, "404.html");
+		int fileLength = (int) file.length();
+		String content = "text/html";
+		byte[] fileData = readFileData(file, fileLength);
+
+		out.println("HTTP/1.1 404 File Not Found");
+		out.println("Server: VRS Java Server");
+		out.println("Date: " + new Date());
+		out.println("Content-type: " + content);
+		out.println("Content-length: " + fileLength);
+		out.println(); // blank line between headers and content **Very Important**
+		out.flush(); // flush output stream buffer
+
+		dataOut.write(fileData, 0, fileLength);
+		dataOut.flush();
 	}
 }
