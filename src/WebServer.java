@@ -31,7 +31,7 @@ public class WebServer implements Runnable {
 	}
 
 	public static void main(String[] args) {
-//		compileProgram();
+		compileProgram();
 		canRunThread = true;
 		startServerThread();
 	}
@@ -66,7 +66,22 @@ public class WebServer implements Runnable {
 	}
 
 	public static void compileProgram() {
-		Object retval = Compiler.command("javac CompilerDemo.java");
+//		Object retval = Compiler.command("javac Test.java");
+		try {
+			Runtime rt = Runtime.getRuntime();
+			Process pr = rt.exec("cmd /c start \"\" compilExecute.bat");
+			BufferedReader in = new BufferedReader(new InputStreamReader(pr.getErrorStream()));
+			String line;
+			while ((line = in.readLine()) != null) {
+				System.out.println(line);
+			}
+			in.close();
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("ello");
 	}
 
 	@Override
