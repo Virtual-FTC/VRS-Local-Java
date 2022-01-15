@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URI;
@@ -22,6 +25,9 @@ public class WebServer implements Runnable {
 	static final String DEFAULT_FILE = "homepage.html";
 	static final int PORT = 80;
 	static boolean canRunThread = true;
+	static DatagramSocket TXsocket;
+	static DatagramSocket RXsocket;
+	static String lastestRX;
 
 	// Client Connection via Socket Class
 	private Socket connect;
@@ -34,35 +40,95 @@ public class WebServer implements Runnable {
 		compileProgram();
 		canRunThread = true;
 		startServerThread();
+		openRXTXSockets();
+	}
+
+	public static void sendMessage(String message) {
+		try {
+			TXsocket.send(new DatagramPacket(message.getBytes(), message.length()));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public static String getLastReceivedMessage() {
+		return lastestRX;
+	}
+
+	public static void openRXTXSockets() {
+		try {
+			TXsocket = new DatagramSocket();
+			TXsocket.connect(InetAddress.getByName("127.0.0.1"), 9051);
+			String message = "Opened Socket";
+			TXsocket.send(new DatagramPacket(message.getBytes(), message.length()));
+
+			RXsocket = new DatagramSocket();
+			RXsocket.connect(InetAddress.getByName("127.0.0.1"), 9052);
+
+			Thread RXSocketThread = new Thread(new Runnable() {
+				public void run() {
+					try {
+						byte[] buffer = new byte[1024];
+						DatagramPacket response = new DatagramPacket(buffer, buffer.length);
+						RXsocket.receive(response);
+						lastestRX = new String(buffer, 0, response.getLength());
+						System.out.println("RX SOCKET RESPONSE: " + lastestRX);
+						// JSONObject jsonObject = new JSONObject(responseText);
+						// DcMotorMaster.motorImpl1.encoderPosition = jsonObject.getDouble("motor1");
+						// DcMotorMaster.motorImpl2.encoderPosition = jsonObject.getDouble("motor2");
+						// DcMotorMaster.motorImpl3.encoderPosition = jsonObject.getDouble("motor3");
+						// DcMotorMaster.motorImpl4.encoderPosition = jsonObject.getDouble("motor4");
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+
+			RXSocketThread.setPriority(Thread.MAX_PRIORITY);
+			RXSocketThread.setName("RX Socket Thread");
+			RXSocketThread.start();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public static void startServerThread() {
-		try {
-			ServerSocket serverConnect = new ServerSocket(PORT);
-			System.out.println("Server started.\nListening for connections on port : " + PORT + " ...\n");
+		Thread serverThread = new Thread(new Runnable() {
+			public void run() {
+				try {
+					ServerSocket serverConnect = new ServerSocket(PORT);
 
-			// we listen until user halts server execution
+					System.out.println("Server started.\nListening for connections on port : " + PORT + " ...\n");
 
-			try {
-				Desktop.getDesktop().browse(new URI("http://localhost:80"));
-			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+					// we listen until user halts server execution
+
+					try {
+						Desktop.getDesktop().browse(new URI("http://localhost:80"));
+					} catch (URISyntaxException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+					while (canRunThread) {
+						WebServer myServer = new WebServer(serverConnect.accept());
+
+						System.out.println("Connecton opened. (" + new Date() + ")");
+
+						// create dedicated thread to manage the client connection
+						Thread thread = new Thread(myServer);
+						thread.start();
+					}
+					serverConnect.close();
+				} catch (IOException e) {
+					System.err.println("Server Connection error : " + e.getMessage());
+				}
 			}
-
-			while (canRunThread) {
-				WebServer myServer = new WebServer(serverConnect.accept());
-
-				System.out.println("Connecton opened. (" + new Date() + ")");
-
-				// create dedicated thread to manage the client connection
-				Thread thread = new Thread(myServer);
-				thread.start();
-			}
-			serverConnect.close();
-		} catch (IOException e) {
-			System.err.println("Server Connection error : " + e.getMessage());
-		}
+		});
+		serverThread.setPriority(Thread.MAX_PRIORITY);
+		serverThread.setName("Webserver Thread");
+		serverThread.start();
 	}
 
 	public static void compileProgram() {
@@ -81,7 +147,6 @@ public class WebServer implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("ello");
 	}
 
 	@Override
