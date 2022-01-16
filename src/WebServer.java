@@ -68,19 +68,22 @@ public class WebServer implements Runnable {
 
 			Thread RXSocketThread = new Thread(new Runnable() {
 				public void run() {
-					try {
-						byte[] buffer = new byte[1024];
-						DatagramPacket response = new DatagramPacket(buffer, buffer.length);
-						RXsocket.receive(response);
-						lastestRX = new String(buffer, 0, response.getLength());
-						System.out.println("RX SOCKET RESPONSE: " + lastestRX);
-						// JSONObject jsonObject = new JSONObject(responseText);
-						// DcMotorMaster.motorImpl1.encoderPosition = jsonObject.getDouble("motor1");
-						// DcMotorMaster.motorImpl2.encoderPosition = jsonObject.getDouble("motor2");
-						// DcMotorMaster.motorImpl3.encoderPosition = jsonObject.getDouble("motor3");
-						// DcMotorMaster.motorImpl4.encoderPosition = jsonObject.getDouble("motor4");
-					} catch (Exception e) {
-						e.printStackTrace();
+					while (true) {
+						try {
+							byte[] buffer = new byte[1024];
+							DatagramPacket response = new DatagramPacket(buffer, buffer.length);
+							RXsocket.receive(response);
+							lastestRX = new String(buffer, 0, response.getLength());
+							System.out.println("RX SOCKET RESPONSE: " + lastestRX);
+							TXsocket.send(new DatagramPacket(lastestRX.getBytes(), lastestRX.length()));
+							// JSONObject jsonObject = new JSONObject(responseText);
+							// DcMotorMaster.motorImpl1.encoderPosition = jsonObject.getDouble("motor1");
+							// DcMotorMaster.motorImpl2.encoderPosition = jsonObject.getDouble("motor2");
+							// DcMotorMaster.motorImpl3.encoderPosition = jsonObject.getDouble("motor3");
+							// DcMotorMaster.motorImpl4.encoderPosition = jsonObject.getDouble("motor4");
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			});
