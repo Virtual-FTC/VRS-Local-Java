@@ -5803,6 +5803,22 @@
 	
 		finalCode += "\nawait runOpMode();\n";
 		runProgram(finalCode);
+		
+		//Specially Requested Java File Saved
+		var javaCode = generateJavaCode();
+		
+		//Can't save files to local files unless using Node.js which I don't think we are with the java applet
+		var element = document.createElement('a');
+	    element.setAttribute('href','data:text/plain;charset=utf-8, ' + encodeURIComponent(javaCode));
+		element.setAttribute('download', "CodeToRun.java");
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+		//I tried this communication for js to java but from research I believe it's running a different type of port
+		/*var socket = new WebSocket("ws://localhost:80");
+		socket.onopen = function (event) {
+		  socket.send("Test Message!");
+		};*/
 	  }
 	  else
 		runProgram(code);

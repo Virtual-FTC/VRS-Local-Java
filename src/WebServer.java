@@ -37,6 +37,24 @@ public class WebServer implements Runnable {
 	}
 
 	public static void startServerThread() {
+		//This code does work for creating files but I haven't figured out how to send data from js to java
+		/*try {
+			File file = new File("data/CodeToRun.java");
+
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+
+			FileWriter outputFile = new FileWriter(file.getAbsoluteFile());
+
+			BufferedWriter output = new BufferedWriter(outputFile);
+
+			output.write("This is a test!");
+
+			output.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}*/
 		Thread serverThread = new Thread(new Runnable() {
 			public void run() {
 				try {
